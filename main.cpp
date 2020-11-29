@@ -1,97 +1,140 @@
-/*
-	Input Validation with Ref Functions 
-	A cleaner way to do input validation
-	Validating input, an essential process.
-	Source: http://stackoverflow.com/questions/514420/how-to-validate-numeric-input-c
-	Keeping Dr. McMillan from breaking my code, defend against "dark side of the force",
-	and/or legitimate user error. 
-	//Try and Catch blocks are used in error checking
-	Teacher: Dr. Tyson McMillan 
-*/
-#include <cstdlib>  // Provides EXIT_SUCCESS
-#include <iostream>  // Provides cout, cerr, endl
-#include "Input_Validation_Extended.h" // Provides getValidatedInput<T>(), a header File with a Template Class
-                              // Extended 2-11-2016 by Dr. McMillan to add validation methods by datatype
-#include<string> //for string manipulation
-#include<sstream> //for string manipulation and comparison
-using namespace std;
+//A  Restaurant Project Struct style Dr_T Dr. Tyson McMillan 10-2-2019
 
-void printArray(int[], int); //pass array as parameter, and its size
-void sortArrAsc(int[], int); 
-void inputArrData(int[], int); 
+#include <iostream>
+#include<string>
+#include<vector>
+#include<iomanip>
+using namespace std; 
 
-int main()
+struct MenuItem
 {
-  /* Working with arrays and vectors
-	Teacher: Dr. Tyson McMillan */
-  //an array called "numbers"
-   int numbers[8] = {23, 46, 12, 24, 1}; //put 5 values of 8 in arr
-   numbers[5] = 500; //assign value 500 to the 6th element
-   numbers[6] = 1000; 
-   numbers[7] = 89; 
+  string name;
+  double itemCost; 
+  string desc; 
+  char addLetter; 
+  char removeLetter;
+  int count; 
+};
 
-   //get the size of numbers
-   int numbers_array_size = sizeof(numbers) / sizeof(int); 
-   cout << "\nNumbers[] array has " << numbers_array_size << " values. ";
-   //print the current values in the numbers array
-   printArray(numbers,numbers_array_size);
-   sortArrAsc(numbers,numbers_array_size);
-   inputArrData(numbers,numbers_array_size); 
-
-    return 0;
-}
-//Function definitions 
-void printArray(int array[], int size)
+//function definitions
+void populateMenu(vector<MenuItem> &entireMenu)
 {
-    //print the array values, 1 per line
-    cout << "\nPrinted Values: " << endl; 
-    for(int i = 0; i < size; i++)
-    {
-      cout << array[i] << endl; 
-    }
-}
+  //put some default values in our Menu
+  const int numItems = 7; 
+  MenuItem Item1; 
+  MenuItem Item2;
+  MenuItem Item3; 
+  MenuItem Item4;
+  MenuItem Item5;
+  MenuItem Item6;
+  MenuItem Item7;    
 
-void sortArrAsc(int array[], int size)
-{
-  int temp = 0; //needed for swap process
-  for(int left = 0; left < size; left++) //number on the left
+  entireMenu.push_back(Item1); //add to the end of list the Item1
+  entireMenu.push_back(Item2); //add to the end of list the Item2
+  entireMenu.push_back(Item3); //add to the end of list the Item3
+  entireMenu.push_back(Item4); //add to the end of list the Item4
+  entireMenu.push_back(Item5); //add to the end of list the Item5
+  entireMenu.push_back(Item6); //add to the end of list the Item6
+  entireMenu.push_back(Item7); //add to the end of list the Item7
+
+  vector<string> defaultMenuNames = {"Green Tea", "Burrito", "Item 3", "Item 4", "Item 5", "Item 6", "Item 7"}; 
+  vector<char> defaultAddLetters = {'A', 'B', 'C', 'D', 'E', 'F', 'G'}; 
+  vector<char> defaultRemoveLetters = {'a', 'b', 'c', 'd', 'e', 'f', 'g'}; 
+
+  for(int i = 0; i < numItems; i++)
   {
-    //the number on the right
-    for(int right = left+1; right < size; right++)
+    //add each item to the default list efficiently 
+    entireMenu[i].name = defaultMenuNames[i]; 
+    entireMenu[i].addLetter = defaultAddLetters[i]; 
+    entireMenu[i].removeLetter = defaultRemoveLetters[i]; 
+    entireMenu[i].itemCost = (3.00 + i); //set a random starter cost for each item
+    entireMenu[i].count = 0; //initialze all counts to 0
+    entireMenu[i].desc = "delicious"; //set all default desc to "delicous"
+  }
+
+
+}
+
+void showMenu(vector<MenuItem> &m)
+{
+  cout << fixed << setprecision(2);//set doubles to 2 decimal places
+  cout << "DrT's Effcient Menu" << endl; 
+  cout << "ADD  \tNAME \t COST \tREMOVE\tCOUNT\tDESC"<<endl; 
+  for(int i = 0; i < m.size(); i++)
+  {
+    cout << m[i].addLetter << ")" << setw(10) << m[i].name 
+    << setw(5) << "$" << m[i].itemCost << setw(5) << "(" << m[i].removeLetter
+    << ")" << setw(7) << m[i].count << setw(13) << m[i].desc 
+    <<endl; 
+  }
+
+}
+
+void acceptOrder(vector<MenuItem> &m)
+{
+  char option = '\0';// the user-selected menu item
+  double subtotal = 0.0; 
+
+  do
+  {
+    cout << "\nPlease choose an item (x to Exit): ";
+    cin >> option; 
+
+    for(int i=0; i < m.size(); i++)
     {
-      //the swap magic happens here :)
-      //Bubble sort: compare the left num to the right num
-      //swap, if necessary.
-      if(array[left] > array[right]) //hint > is ASC, < is DESC
+      if(option == m[i].addLetter)
       {
-        temp = array[left]; 
-        array[left] = array[right]; 
-        array[right] = temp; 
+        cout << "\nMenu Item " << m[i].addLetter << " selected."; 
+        m[i].count++; //increment the count by 1
+        cout << "\033[2J\033[1;1H"; //clear screen 
+        cout << "\n1 UP on " << m[i].name << endl;
+        subtotal += m[i].itemCost; //increment the subtotal by the cost of the item 
+        showMenu(m); //show the updated menu
+        cout << "\nSubtotal: $" << subtotal << endl;  
       }
+      else if(option == m[i].removeLetter)
+      {
+        cout << "\nRemove Item " << m[i].removeLetter << " selected."; 
+        if(m[i].count > 0) //subtract if and only if the count is > 0
+        {
+          m[i].count--; //decrement the count by 1
+          cout << "\033[2J\033[1;1H"; //clear screen 
+          cout << "\n1 DOWN on " << m[i].name << endl;
+          subtotal -= m[i].itemCost; //decrement the subtotal by the cost of the item
+          showMenu(m); //show the updated menu
+          cout << "\nSubtotal: $" << subtotal << endl;  
+        }
+        else //the the user why you blocked item removal 
+        {
+            
+            cout << "\nItem count must be > 0 to remove: " << m[i].name << endl;
+        }
+      }
+      else if(
+                option != m[i].addLetter && 
+                option != m[i].removeLetter &&
+                option != 'x' &&
+                option != 'X' 
+            ) //test for all of my valid inputs
+            {
+              if(i == 0)
+              {
+                cout << "\nInvalid input (" << option << "). Please try again." << endl; 
+              }  
+            }
     }
-  }
-
-  printArray(array,size);//print the list after sorting the list ASC
+  }while(option != 'x' && option != 'X'); 
+  cout << "\nThank you for placing your order." << endl; 
+  //handle the tip process here
+  //handle reciept generation here
 }
 
-void inputArrData(int array[], int size)
+int main() 
 {
-  //1 accept validated input into the array "size" values
-  //2 sort that Array ASC
-  //3 print the latest values in sorted order
-  int input = 0; //my input storage variable 
-  for(int i = 0; i < size; i++) //1
-  {
-    cout << "\nPlease input number " << (i + 1) << " of " << size <<":";
-    input = validateInt(input); 
-    array[i] = input; //store the validated values into the array
-  }
-  sortArrAsc(array,size); //2 and 3
-  /*expand this code 
-   sort the inputed list DESC
-   and print that to the screen
-   After you have sorted the array ASC
-
-  */
-  //call sortArrDesc(array, size); on this line
+  vector<MenuItem> wholeMenu; 
+  populateMenu(wholeMenu); //put some default values in the menu
+  showMenu(wholeMenu); //print the current data of the menu on screen 
+  acceptOrder(wholeMenu); 
+  
+  return 0; 
 }
