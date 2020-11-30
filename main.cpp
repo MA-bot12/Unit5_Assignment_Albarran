@@ -4,6 +4,7 @@
 #include<string>
 #include<vector>
 #include<iomanip>
+#include "Input_Validation_Extended.h"
 using namespace std; 
 
 class MenuItem
@@ -89,6 +90,8 @@ void acceptOrder(vector<MenuItem> &m)
   char option = '\0';// the user-selected menu item
   double subtotal = 0.0; 
   int tempCount = 0;
+  double tip = 0.0;
+
   do
   {
     cout << "\nPlease choose an item (x to Exit): ";
@@ -143,6 +146,13 @@ void acceptOrder(vector<MenuItem> &m)
   }while(option != 'x' && option != 'X'); 
   cout << "\nThank you for placing your order." << endl; 
   //handle the tip process here
+  cout << "\nPlease enter tip (20% or more is recommended): ";
+  tip = validateDouble(tip);
+  while(tip < 0.0)
+  {
+    tip = validateDouble(tip);
+  } 
+  subtotal += tip;
   //handle reciept generation here
 }
 
